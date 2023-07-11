@@ -1,66 +1,64 @@
-import { render } from 'preact';
-import { useState } from 'preact/hooks';
-import './style.css';
+
+import { render } from "preact";
+import { useRef, useState } from "preact/hooks";
+import "./style.css";
+import { gettingCurrent } from "./service-worker";
+
 const apiKey = import.meta.env.VITE_API_KEY;
 const requestUrl = import.meta.env.VITE_URL;
-// export function App() {
-// 	const [count, setCount] = useState(0);
-
-// 	return (
-// 		<>
-// 			<div>
-// 				<a href="https://vitejs.dev" target="_blank">
-// 					<img src={viteLogo} class="logo" alt="Vite logo" />
-// 				</a>
-// 				<a href="https://preactjs.com" target="_blank">
-// 					<img src={preactLogo} class="logo preact" alt="Preact logo" />
-// 				</a>
-// 			</div>
-// 			<h1>Vite + Preact</h1>
-// 			<div class="card">
-// 				<button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-// 				<p>
-// 					Edit <code>src/app.jsx</code> and save to test HMR
-// 				</p>
-// 			</div>
-// 			<p class="read-the-docs">Click on the Vite and Preact logos to learn more</p>
-// 		</>
-// 	);
-// }
 
 const App = () => {
   const [url, setUrl] = useState("");
-  const handleInput = (event) => {
-    setUrl(event.currentTarget.value);
-    console.log(url);
-  }
+  const [error, setError] = useState(false);
+  
+  const form = useRef(null);
+  
+  const onInput = async (event) => {
 
-  let count = 0;
-  const onSubmit = async (event) => {
-    const body = new FormData
-    body.append("url", url);
+    await gettingCurrent();
+    const { value } = event.target;
+    setUrl(value);
+  };
 
-    const response = await fetch(requestUrl, {
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey
-      },
-      body,
-      method: "POST"
-    })
+  const onSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(form.current);
+    for (let items of data) {
+      console.log(items);
+    }
 
-    console.log(response);
-  }
+    // console.log(gettingCurrent);
+    // const response = await fetch(requestUrl, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "x-api-key": apiKey,
+    //   },
+    //   body,
+    //   method: "POST",
+    // });
+
+    // console.log(response);
+  };
 
   return (
     <div>
       <h1>Test Extension</h1>
-      <form class="form" onSubmit={onSubmit}>
-        <input type="url" name="url" id="url" placeholder="Enter url" onInput={handleInput} />
+      <form className="form" ref={form} onSubmit={onSubmit}>
+        <div>
+          <input
+            type="url"
+            name="url"
+            value={url}
+            id="url"
+            placeholder="Enter url"
+            onInput={onInput}
+          />
+          <p>Invalid url</p>
+        </div>
         <button type="submit">Check</button>
       </form>
     </div>
   );
-}
+};
 
-render(<App />, document.getElementById('app'));
+render(<App />, document.getElementById("app"));
