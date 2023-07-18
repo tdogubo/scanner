@@ -1,8 +1,7 @@
-
 import { render } from "preact";
 import { useRef, useState } from "preact/hooks";
 import "./style.css";
-import { gettingCurrent } from "./service-worker";
+// import { gettingCurrent } from "./service-worker";
 
 const apiKey = import.meta.env.VITE_API_KEY;
 const requestUrl = import.meta.env.VITE_URL;
@@ -10,12 +9,13 @@ const requestUrl = import.meta.env.VITE_URL;
 const App = () => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
-  
-  const form = useRef(null);
-  
-  const onInput = async (event) => {
+  const [val, setVal] = useState("");
 
-    await gettingCurrent();
+  const form = useRef(null);
+
+  const onInput = async (event) => {
+    // let check = await gettingCurrent(); 
+    // console.log(check);
     const { value } = event.target;
     setUrl(value);
   };

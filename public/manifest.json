@@ -9,9 +9,10 @@
         "default_icon": "icon.png"
     },
     "permissions": [
-        "tabs"
+        "tabs",
+        "storage"
     ],
-    "background":{
+    "background": {
         "service_worker": "service-worker.js",
         "type": "module"
     },

@@ -1,26 +1,35 @@
 // @ts-nocheck
 
-export const gettingCurrent = async () => {
-  let queryOptions = { active: true, lastFocusedWindow: true };
-
-  let tab = await chrome.tabs.onActivated.addListener(function (activeInfo) {
-    chrome.tabs.get(activeInfo.tabId, function (tab) {
-      let tabUrl = tab.url;
-      console.log("you are here: ", tabUrl);
-    });
-    // });
-    // const tab = await chrome.tabs;
-    // chrome.tabs.onActivated.addListener(function (activeInfo) {
-    //   chrome.tabs.get(activeInfo.tabId, function (tab) {
-    //     let y = tab.url;
-    //     console.log("you are here: " + y);
-    //   });
-    // });
-    // chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
-    //   if (tab.active && change.url) {
-    //     console.log("you are here: " + change.url);
-    //   }
+async function getTabs() {
+  return await chrome.storage.sync.get().then((items) => {
+    return items["history"] ? items["history"] : [];
   });
-  console.log("TAB:: ", tab);
+}
+
+async function getCurrentTab() {
+  let queryOptions = { active: true, lastFocusedWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab.url;
+}
+
+async function tabListener() {
+  const tabUrl = await getCurrentTab();
+  const tabsCache = await getTabs();
+  console.log("TEST:::", tabsCache);
+  if (!tabsCache?.includes(tabUrl)) {
+    await chrome.storage.sync.set({
+      currentTab: tabUrl,
+      history: [...tabsCache, tabUrl],
+    });
+  }
+  await chrome.storage.sync.get(null, (data) => {
+    console.log("VALUE SET", data);
+  });
+  return;
+}
+
+export const gettingCurrent = () => {
+  chrome.tabs.onActivated.addListener(tabListener);
+  return;
 };
 gettingCurrent();
