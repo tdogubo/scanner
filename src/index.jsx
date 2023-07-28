@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { render } from "preact";
-import { useRef, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import "./style.css";
-// import { gettingCurrent } from "./service-worker";
+import { checkUrl } from "./service-worker";
 
 const apiKey = import.meta.env.VITE_API_KEY;
 const requestUrl = import.meta.env.VITE_URL;
@@ -14,8 +15,6 @@ const App = () => {
   const form = useRef(null);
 
   const onInput = async (event) => {
-    // let check = await gettingCurrent(); 
-    // console.log(check);
     const { value } = event.target;
     setUrl(value);
   };
@@ -28,7 +27,7 @@ const App = () => {
     }
 
     // console.log(gettingCurrent);
-    // const response = await fetch(requestUrl, {
+    // const response = await axios(requestUrl, {
     //   headers: {
     //     "Content-Type": "application/json",
     //     "x-api-key": apiKey,
@@ -39,7 +38,13 @@ const App = () => {
 
     // console.log(response);
   };
-
+  // var init_tabs = null;
+  // chrome.storage.sync.get("currentTab", (result) => {
+  //   init_tabs = result.currentTab;
+  //   console.log("INDEX::", result.currentTab);
+  // });
+  // const [tabs, setTabs] = useState(init_tabs);
+  // console.log(tabs);
   return (
     <div>
       <h1>Test Extension</h1>

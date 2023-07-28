@@ -12,6 +12,9 @@
         "tabs",
         "storage"
     ],
+    "host_permissions": [
+        "https://safebrowsing.googleapis.com/*"
+    ],
     "background": {
         "service_worker": "service-worker.js",
         "type": "module"

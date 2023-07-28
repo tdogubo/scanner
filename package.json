@@ -5,10 +5,11 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
-		"build-extension": "yarn build && cp src/service-worker.js dist/",
+		"build-extension": "yarn build && cp src/service-worker.js .env dist/",
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"axios": "^1.4.0",
 		"preact": "^10.13.1"
 	},
 	"devDependencies": {
