@@ -13,7 +13,41 @@ async function getCurrentTab() {
 }
 
 async function tabListener() {
-  const body = {
+  // const body = {
+  //   // client: {
+  //   //   clientId: "yourcompanyname",
+  //   //   clientVersion: "1.5.2",
+  //   // },
+  //   // threatInfo: {
+  //   //   threatTypes: ["MALWARE", "SOCIAL_ENGINEERING"],
+  //   //   platformTypes: ["WINDOWS"],
+  //   //   threatEntryTypes: ["URL"],
+  //   //   threatEntries: [
+  //   //     { url: "http://www.urltocheck1.org/" },
+  //   //     { url: "https://malware.testing.google.test/testing/malware/" },
+  //   //     {
+  //   //       url: "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/",
+  //   //     },
+  //   //   ],
+  //   // },
+  //   client: {
+  //     clientId: "scanner_App",
+  //     clientVersion: "1.5.2",
+  //   },
+  //   threatInfo: {
+  //     threatTypes: ["MALWARE", "SOCIAL_ENGINEERING"],
+  //     platformTypes: ["WINDOWS"],
+  //     threatEntryTypes: ["URL"],
+  //     threatEntries: [
+  //       { url: "https://preactjs.com/guide/v10/forms/" },
+  //       { url: "https://malware.testing.google.test/testing/malware/" },
+  //       {
+  //         url: "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/",
+  //       },
+  //     ],
+  //   },
+  // };
+  const body = JSON.stringify({
     client: {
       clientId: "scanner_App",
       clientVersion: "1.5.2",
@@ -23,13 +57,13 @@ async function tabListener() {
       platformTypes: ["WINDOWS"],
       threatEntryTypes: ["URL"],
       threatEntries: [
-        { url: "http://www.urltocheck1.org/" },
-        { url: "http://www.urltocheck2.org/" },
-        { url: "http://www.urltocheck3.com/" },
-        { url: "https://preactjs.com/guide/v10/forms/" },
+        { url: "https://malware.testing.google.test/testing/malware/" },
+        {
+          url: "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/",
+        },
       ],
     },
-  };
+  });
   try {
     // const test = await fetch(
     //   "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyDS7hezSOudyOGdp9I2LqFtMMdSA5IaL5Y",
@@ -80,36 +114,54 @@ async function tabListener() {
       return read();
     }
 
+    // const headers = new Headers({
+    //   "Content-Type": "application/json",
+    // });
+    // headers.append("user", { name: "Tahmee", email: "tahnmee@gmail.com" });
+
     const response = await fetch(
-      "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyDS7hezSOudyOGdp9I2LqFtMMdSA5IaL5Y HTTP/1.1",
+      "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyDS7hezSOudyOGdp9I2LqFtMMdSA5IaL5Y",
       {
         method: "POST",
+        mode: "cors",
+        // headers,
         headers: {
-          append: { "Content-Type": "application/json" },
+          "Content-Type": "application/json",
+          //   "Access-Control-Allow-Origin": "*",
+          //   append: {
+          //     user: { name: "Tahmee", email: "tahnmee@gmail.com" },
         },
+        //   // user: { name: "Tahmee", email: "tahnmee@gmail.com" },
+        // },
       },
       body
     );
+    //! MAKE SURE THE REQUEST IS WORKING. NO NEED TO USE A READER `REQUEST.JSON()` WORKS PERFECTLY.
 
-    const reader = response.body.getReader();
-    // let charsReceived = 0;
-    let chunk;
-    await reader.read().then(function processText({ done, value }) {
-      // Result objects contain two properties:
-      // done  - true if the stream has already given you all its data.
-      // value - some data. Always undefined when done is true.
-      if (done) {
-        console.log("Stream complete, VALUE: " + value);
-        return;
-      }
-      chunk = value;
-      // Read some more, and call this function again
-      return reader.read().then(processText);
-    });
+    // const reader = response.body.getReader();
+    // // let charsReceived = 0;
+    // let chunk;
+    // await reader.read().then(function processText({ done, value }) {
+    //   // Result objects contain two properties:
+    //   // done  - true if the stream has already given you all its data.
+    //   // value - some data. Always undefined when done is true.
+    //   if (done) {
+    //     console.log("Stream complete");
+    //     return;
+    //   }
+    //   console.log("VALUE: " + value);
+    //   chunk = value;
+    //   // Read some more, and call this function again
+    //   return reader.read().then(processText);
+    // });
+    console.log(response);
+    const val = await response.json();
+    val.test = "test";
+    console.log(val, val?.matches);
 
-    const string = new TextDecoder().decode(chunk, { stream: true });
-    const data = JSON.parse(string);
-    console.log(chunk, data);
+    // const string = new TextDecoder().decode(chunk);
+    // const data = JSON.parse(string);
+    // console.log(chunk, string);
   } catch (err) {
     console.error(err);
   }
