@@ -65,54 +65,6 @@ async function tabListener() {
     },
   });
   try {
-    // const test = await fetch(
-    //   "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyDS7hezSOudyOGdp9I2LqFtMMdSA5IaL5Y",
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       append: { "Content-Type": "text/plain" },
-    //     },
-    //   },
-    //   body
-    // );
-
-    // const reader = test.body.getReader();
-
-    // const response = await reader.read().then(function pump({ done, value }) {
-    //   if (done) {
-    //     //     reader.releaseLock();
-
-    //     // Do something with last chunk of data then exit reader
-    //     return;
-    //   }
-    //   console.log("VALUE IN PUMP FUNCT", value);
-    //   // Otherwise do something here to process current chunk
-
-    //   // Read some more, and call this function again
-    //   return reader.read().then(pump);
-    // });
-
-    async function toJSON(body) {
-      const reader = body.getReader(); // `ReadableStreamDefaultReader`
-      const decoder = new TextDecoder();
-      const chunks = [];
-
-      async function read() {
-        const { done, value } = await reader.read();
-
-        // all chunks have been read?
-        if (done) {
-          console.log("chunks::", chunks);
-          return JSON.parse(chunks.join(""));
-        }
-
-        const chunk = decoder.decode(value, { stream: true });
-        chunks.push(chunk);
-        return read(); // read the next chunk
-      }
-
-      return read();
-    }
 
     // const headers = new Headers({
     //   "Content-Type": "application/json",
