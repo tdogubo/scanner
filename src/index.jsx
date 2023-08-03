@@ -35,9 +35,10 @@ const App = () => {
     //   body,
     //   method: "POST",
     // });
-
     // console.log(response);
   };
+ 
+
   // var init_tabs = null;
   // chrome.storage.sync.get("currentTab", (result) => {
   //   init_tabs = result.currentTab;
