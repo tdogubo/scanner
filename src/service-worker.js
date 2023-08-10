@@ -44,37 +44,24 @@ async function tabListener() {
     const key = await fetch(
       "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
       { method: "POST" }
-    ).then((res) => {
-      console.log("JSON RESPONSE::: ", res.json());
-      return res.json();
-    });
+    )
+      .then(async (res) => {
+        const jsonData = await res.json();
+        return jsonData?.key;
+      })
+      .catch(() => {
+        return "";
+      });
 
-    console.log("KEY::: ", key);
-
-    // const response = await fetch(
-    //   // "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyDS7hezSOudyOGdp9I2LqFtMMdSA5IaL5Y",
-    //   "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
-    //   options
-    // );
-
-    // const response = await fetch(
-    //   "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey", {
-    //     method:"POST",
-    //   }
-    //   // options
-    // );
-
-    // const data = await response.json();
-    // console.log(data);
-
-    // for (const pair of response.headers.entries()) {
-    // console.log(`${pair[0]}: ${pair[1]}`);
-    // }
+    const safetyCheck = await fetch(
+      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`,
+      options
+    );
+    const result = await safetyCheck.json();
+    console.log(result);
   } catch (err) {
     console.error("ERROR:::", err);
   }
-  // const apiKey = process.env.VITE_API_KEY;
-  // const requestUrl = import.meta.env.VITE_URL;
   await chrome.storage.sync.clear(() => {
     console.log("cleared");
   }); //! remove after test. This clears the storage.
