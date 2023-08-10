@@ -13,7 +13,8 @@
         "storage"
     ],
     "host_permissions": [
-        "https://safebrowsing.googleapis.com/*"
+        "https://safebrowsing.googleapis.com/*",
+        "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey"
     ],
     "background": {
         "service_worker": "service-worker.js",
