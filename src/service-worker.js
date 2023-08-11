@@ -62,15 +62,23 @@ async function tabListener() {
       //   },
       // });
       chrome.notifications.create(
-        "",
+        "url alert",
         {
           type: "basic",
-          iconUrl: "icon.png",
-          title: "This is a notification",
+          iconUrl: "danger.png",
+          title: "URL check",
           message: "hello there!",
         },
-        function () {}
+        (value) => {
+          chrome.notifications.getAll((val) => {
+            console.log("NOTIFICATION::", val);
+            console.log("NOTIFICATION::", value);
+          });
+        }
       );
+      chrome.notifications.clear("8c62903c-2012-40bf-8dfe-b5c0fa3c0112", () => {
+        console.log("done");
+      });
     }
 
     await chrome.storage.sync.set({
