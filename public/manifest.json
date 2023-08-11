@@ -9,8 +9,9 @@
         "default_icon": "icon.png"
     },
     "permissions": [
-        "tabs",
-        "storage"
+        "notifications",
+        "storage",
+        "tabs"
     ],
     "host_permissions": [
         "https://safebrowsing.googleapis.com/*",
