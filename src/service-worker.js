@@ -13,6 +13,7 @@ async function getCurrentTab() {
 }
 let key = "";
 async function tabListener() {
+  
   try {
     key = await fetch(
       "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
@@ -47,20 +48,18 @@ async function tabListener() {
     if (Object.keys(result).length === 0) {
       console.log("ALL GOOD");
     } else {
-      // chrome.runtime.onMessage.addListener((data) => {
-      //   if (data.type === "notification") {
-      //     chrome.notifications.create("", data.options);
-      //   }
-      // });
-      // chrome.runtime.sendMessage("", {
-      //   type: "notification",
-      //   options: {
-      //     title: "Just wanted to notify you",
-      //     message: "How great it is!",
-      //     iconUrl: "/icon.png",
-      //     type: "basic",
+      // await chrome.permissions.request(
+      //   {
+      //     permissions: ["notifications"],
       //   },
-      // });
+      //   function (granted) {
+      //     if (granted) {
+      //       // do this
+      //     } else {
+      //       // do that
+      //     }
+      //   }
+      // ); //TODO: Check need of implementation. Should be during a `user gesture` like clicking a button....
       chrome.notifications.create(
         "url alert",
         {
@@ -70,15 +69,11 @@ async function tabListener() {
           message: "hello there!",
         },
         (value) => {
-          chrome.notifications.getAll((val) => {
-            console.log("NOTIFICATION::", val);
-            console.log("NOTIFICATION::", value);
-          });
+          setTimeout(() => {
+            chrome.notifications.clear(value);
+          }, 2000);
         }
       );
-      chrome.notifications.clear("8c62903c-2012-40bf-8dfe-b5c0fa3c0112", () => {
-        console.log("done");
-      });
     }
 
     await chrome.storage.sync.set({
