@@ -67,6 +67,16 @@ async function tabListener() {
           iconUrl: "danger.png",
           title: "URL check",
           message: "hello there!",
+          buttons: [
+            {
+              title: "Yes, get me there",
+              iconUrl: "danger.png",
+            },
+            {
+              title: "Get out of my way",
+              iconUrl: "icon.png",
+            },
+          ],
         },
         (value) => {
           setTimeout(() => {
