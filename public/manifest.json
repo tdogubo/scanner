@@ -10,6 +10,7 @@
     },
     "permissions": [
         "notifications",
+        "scripting",
         "storage",
         "tabs"
     ],

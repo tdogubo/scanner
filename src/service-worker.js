@@ -9,11 +9,10 @@ async function getTabs() {
 async function getCurrentTab() {
   let queryOptions = { active: true, lastFocusedWindow: true };
   let [tab] = await chrome.tabs.query(queryOptions);
-  return tab.url;
+  return tab;
 }
 let key = "";
 async function tabListener() {
-  
   try {
     key = await fetch(
       "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
@@ -33,21 +32,41 @@ async function tabListener() {
     console.log("cleared");
   }); //! remove after test. This clears the storage.
 
-  const tabUrl = await getCurrentTab();
+  const { url, id } = await getCurrentTab();
   const tabsCache = await getTabs();
   if (
-    !["", "chrome://extensions/"].includes(tabUrl) &&
-    !tabsCache?.includes(tabUrl)
+    !["", "chrome://extensions/"].includes(url) &&
+    !tabsCache?.includes(url)
   ) {
     const urlForm = new FormData();
-    urlForm.set("url", tabUrl);
-    let result = await getResult(tabUrl);
+    urlForm.set("url", url);
+    let result = await getResult(url);
 
     console.log(Object.keys(result));
+    let notificationId;
 
     if (Object.keys(result).length === 0) {
       console.log("ALL GOOD");
     } else {
+      // console.log("TAB::", url, id);
+      // chrome.tabs.executeScript(id, {
+      //   code: "window.stop();",
+      //   runAt: "document_start",
+      // });
+      // chrome.tabs.executeScript(
+      //   id,
+      //   {
+      //     code: 'window.stop()',
+      //     runAt: "document_start",
+      //   },
+      //   () => { console.log("Run");}
+      // );
+      await chrome.scripting
+        ?.executeScript({
+          target: { tabId: id },
+          func: () => console.log("SCRIPT::", id),
+        })
+        .then(() => console.log("injected a function")).catch((e)=>console.log("ERROR:: ", e));
       // await chrome.permissions.request(
       //   {
       //     permissions: ["notifications"],
@@ -60,7 +79,7 @@ async function tabListener() {
       //     }
       //   }
       // ); //TODO: Check need of implementation. Should be during a `user gesture` like clicking a button....
-      chrome.notifications.create(
+      await chrome.notifications.create(
         "url alert",
         {
           type: "basic",
@@ -79,16 +98,31 @@ async function tabListener() {
           ],
         },
         (value) => {
-          setTimeout(() => {
-            chrome.notifications.clear(value);
-          }, 2000);
+          notificationId = value;
+          console.log("NOTIFICATION:", value);
+
+          // setTimeout(() => {
+          //   chrome.notifications.clear(value);
+          // }, 2000);
         }
       );
+      await chrome.notifications.onButtonClicked.addListener(function (val) {
+        // if (id === 0) {
+        //   console.log("clicked", val, 0);
+        // } else if (id === 1) {
+        //   console.log("clicked", val, 1);
+        // }
+        console.log("clicked no get head", { ...val }, null);
+      });
     }
 
+    setTimeout(() => {
+      chrome.notifications.clear(notificationId);
+    }, 1000);
+
     await chrome.storage.sync.set({
-      currentTab: tabUrl,
-      history: [...tabsCache, tabUrl],
+      currentTab: url,
+      history: [...tabsCache, url],
     });
   }
   await chrome.storage.sync.get(null, (data) => {
