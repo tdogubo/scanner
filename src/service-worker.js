@@ -14,20 +14,21 @@ async function getCurrentTab() {
 let key = "";
 async function tabListener() {
   try {
-    key = await fetch(
-      "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
-      { method: "POST" }
-    )
-      .then(async (res) => {
-        const jsonData = await res.json();
-        return jsonData?.key;
-      })
-      .catch(() => {
-        return "";
-      });
+    // key = await fetch(
+    //   "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
+    //   { method: "POST" }
+    // )
+    //   .then(async (res) => {
+    //     const jsonData = await res.json();
+    //     return jsonData?.key;
+    //   })
+    //   .catch(() => {
+    //     return "";
+    //   });
   } catch (err) {
     console.error("Server Error");
-  }
+  } //! check relevance.
+
   await chrome.storage.sync.clear(() => {
     console.log("cleared");
   }); //! remove after test. This clears the storage.
@@ -40,85 +41,79 @@ async function tabListener() {
   ) {
     const urlForm = new FormData();
     urlForm.set("url", url);
-    let result = await getResult(url);
+    let result = { url }; //! comment below is the right one
+    // let result = await getResult(url);
 
     console.log(Object.keys(result));
-    let notificationId;
+    // let notificationId;
 
     if (Object.keys(result).length === 0) {
       console.log("ALL GOOD");
     } else {
-      // console.log("TAB::", url, id);
-      // chrome.tabs.executeScript(id, {
-      //   code: "window.stop();",
-      //   runAt: "document_start",
-      // });
-      // chrome.tabs.executeScript(
-      //   id,
-      //   {
-      //     code: 'window.stop()',
-      //     runAt: "document_start",
-      //   },
-      //   () => { console.log("Run");}
-      // );
-      await chrome.scripting
-        ?.executeScript({
-          target: { tabId: id },
-          func: () => console.log("SCRIPT::", id),
-        })
-        .then(() => console.log("injected a function")).catch((e)=>console.log("ERROR:: ", e));
-      // await chrome.permissions.request(
-      //   {
-      //     permissions: ["notifications"],
-      //   },
-      //   function (granted) {
-      //     if (granted) {
-      //       // do this
-      //     } else {
-      //       // do that
-      //     }
-      //   }
-      // ); //TODO: Check need of implementation. Should be during a `user gesture` like clicking a button....
-      await chrome.notifications.create(
-        "url alert",
-        {
-          type: "basic",
-          iconUrl: "danger.png",
-          title: "URL check",
-          message: "hello there!",
-          buttons: [
-            {
-              title: "Yes, get me there",
-              iconUrl: "danger.png",
-            },
-            {
-              title: "Get out of my way",
-              iconUrl: "icon.png",
-            },
-          ],
-        },
-        (value) => {
-          notificationId = value;
-          console.log("NOTIFICATION:", value);
+      // try {
+      //   chrome.tabs.sendMessage(id, "modal", null, () => {
+      //     console.log("ping content script");
+      //   });
+      // } catch (error) {
+      //   console.error("ERRor:::::", error);
+      // }
 
-          // setTimeout(() => {
-          //   chrome.notifications.clear(value);
-          // }, 2000);
-        }
-      );
-      await chrome.notifications.onButtonClicked.addListener(function (val) {
-        // if (id === 0) {
-        //   console.log("clicked", val, 0);
-        // } else if (id === 1) {
-        //   console.log("clicked", val, 1);
-        // }
-        console.log("clicked no get head", { ...val }, null);
-      });
+      // try {
+      // const res = await chrome.tabs.sendMessage(id, "modal" );
+      // console.log("RESPONSE MESSAGE::", res);
+      // } catch (e) {
+      //   console.log(e);
+      // }
+
+      await chrome.scripting
+        .executeScript({
+          target: { tabId: id },
+          files: ["content.js"],
+        })
+      //   .then(() => console.log("script injected", id));
+      //!: Check need of implementation. Should be during a `user gesture` like clicking a button....
+      // await chrome.notifications.create(
+      //   "url alert",
+      //   {
+      //     type: "basic",
+      //     iconUrl: "danger.png",
+      //     title: "URL check",
+      //     message: "hello there!",
+      //     buttons: [
+      //       {
+      //         title: "Accept",
+      //         iconUrl: "danger.png",
+      //       },
+      //       {
+      //         title: "Decline",
+      //         iconUrl: "icon.png",
+      //       },
+      //     ],
+      //   },
+      //   (value) => {
+      //     notificationId = value;
+      //     console.log("NOTIFICATION:", value);
+
+      //     // setTimeout(() => {
+      //     //   chrome.notifications.clear(value);
+      //     // }, 2000);
+      //   }
+      // );
+      // chrome.notifications.onButtonClicked.addListener(function (val, id) {
+      //   console.log("clicked no get head", { val }, null);
+      //   if (id === 0) {
+      //     console.log("clicked", val, 0);
+      //   } else if (id === 1) {
+      //     console.log("clicked", val, 1);
+      //   } else {
+      //     console.log("Settings clicked");
+      //   }
+      // });
     }
 
-    setTimeout(() => {
-      chrome.notifications.clear(notificationId);
-    }, 1000);
+    // setTimeout(() => {
+    //   chrome.notifications.clear(notificationId);
+    // }, 10000);
 
     await chrome.storage.sync.set({
       currentTab: url,

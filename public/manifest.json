@@ -3,25 +3,40 @@
     "description": "Base Level Extension",
     "version": "1.0",
     "manifest_version": 3,
+    "background": {
+        "service_worker": "service-worker.js",
+        "type": "module"
+    },
     "action": {
         "default_popup": "index.html",
         "default_title": "Click to scan",
         "default_icon": "icon.png"
     },
     "permissions": [
-        "notifications",
         "scripting",
         "storage",
+        "activeTab"
+    ],
+    "optional_permissions": [
         "tabs"
     ],
     "host_permissions": [
-        "https://safebrowsing.googleapis.com/*",
-        "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey"
+        "http://*/",
+        "https://*/"
     ],
-    "background": {
-        "service_worker": "service-worker.js",
-        "type": "module"
-    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://*/*",
+                "http://*/*",
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_end"
+        }
+    ],
     "icons": {
         "48": "icon.png"
     }
