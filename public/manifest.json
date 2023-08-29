@@ -13,12 +13,12 @@
         "default_icon": "icon.png"
     },
     "permissions": [
-        "scripting",
         "storage",
         "activeTab"
     ],
     "optional_permissions": [
-        "tabs"
+        "tabs",
+        "scripting"
     ],
     "host_permissions": [
         "http://*/",
@@ -27,8 +27,6 @@
     "content_scripts": [
         {
             "matches": [
-                "https://*/*",
-                "http://*/*",
                 "<all_urls>"
             ],
             "js": [
