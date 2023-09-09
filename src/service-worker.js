@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+// console.log(test);
+
 async function getTabs() {
   return await chrome.storage.sync.get().then((items) => {
     return items["history"] ? items["history"] : [];
@@ -12,7 +14,8 @@ async function getCurrentTab() {
   return tab;
 }
 let key = "";
-async function tabListener() {
+async function tabListener(details,changeInfo ) {
+  console.log("DETAILS::", details, changeInfo);
   try {
     // key = await fetch(
     //   "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
@@ -50,13 +53,27 @@ async function tabListener() {
     if (Object.keys(result).length === 0) {
       console.log("ALL GOOD");
     } else {
-      // try {
-      //   chrome.tabs.sendMessage(id, "modal", null, () => {
-      //     console.log("ping content script");
-      //   });
-      // } catch (error) {
-      //   console.error("ERRor:::::", error);
-      // }
+      try {
+        // chrome.runtime.onMessage.addListener(function (
+        //   msg,
+        //   sender,
+        //   sendResponse
+        // ) {
+        //   if (msg.closeTab) {
+        //     chrome.tabs.remove(sender.tab.id);
+        //   }
+        // });
+        await chrome.tabs.sendMessage(
+          id,
+          { trigger: "modal", tab: id },
+          null,
+          () => {
+            console.log("ping content script");
+          }
+        );
+      } catch (error) {
+        console.error("ERRor:::::", error);
+      }
 
       // try {
       // const res = await chrome.tabs.sendMessage(id, "modal" );
@@ -65,11 +82,11 @@ async function tabListener() {
       //   console.log(e);
       // }
 
-      await chrome.scripting
-        .executeScript({
-          target: { tabId: id },
-          files: ["content.js"],
-        })
+      // await chrome.scripting
+      //   .executeScript({
+      //     target: { tabId: id },
+      //     files: ["content.js"],
+      //   })
       //   .then(() => console.log("script injected", id));
       //!: Check need of implementation. Should be during a `user gesture` like clicking a button....
       // await chrome.notifications.create(
@@ -127,7 +144,9 @@ async function tabListener() {
 }
 
 export const checkUrl = async () => {
-  await chrome.tabs.onActivated.addListener(tabListener);
+  // await chrome.tabs.onActivated.addListener(tabListener);
+  await chrome.tabs.onUpdated.addListener(tabListener);
+
   return;
 };
 
