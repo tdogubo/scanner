@@ -14,7 +14,7 @@ async function getCurrentTab() {
   return tab;
 }
 let key = "";
-async function tabListener(details,changeInfo ) {
+async function tabListener(details, changeInfo) {
   console.log("DETAILS::", details, changeInfo);
   try {
     // key = await fetch(
@@ -32,15 +32,17 @@ async function tabListener(details,changeInfo ) {
     console.error("Server Error");
   } //! check relevance.
 
-  await chrome.storage.sync.clear(() => {
-    console.log("cleared");
-  }); //! remove after test. This clears the storage.
+  // await chrome.storage.sync.clear(() => {
+  //   console.log("cleared");
+  // }); //! remove after test. This clears the storage.
 
   const { url, id } = await getCurrentTab();
+  const baseUrl = url?.split("/")[2];
+  console.log(baseUrl, "BASE");
   const tabsCache = await getTabs();
   if (
     !["", "chrome://extensions/"].includes(url) &&
-    !tabsCache?.includes(url)
+    !tabsCache?.includes(baseUrl)
   ) {
     const urlForm = new FormData();
     urlForm.set("url", url);
@@ -63,12 +65,31 @@ async function tabListener(details,changeInfo ) {
         //     chrome.tabs.remove(sender.tab.id);
         //   }
         // });
+
+        // chrome.tabs.update(id, { active: false, pinned: true }, () => {
+        //   console.log("TAB DISPLACED");
+        // }); // !
+
+        await chrome.scripting.executeScript({
+          target: { tabId: id },
+          func: stopPageLoad,
+        });
         await chrome.tabs.sendMessage(
           id,
           { trigger: "modal", tab: id },
           null,
           () => {
             console.log("ping content script");
+          }
+        );
+        chrome.runtime.onMessage.addListener(
+          (request, sender, sendResponse) => {
+            if (request?.trigger.includes("reload")) {
+              chrome.tabs.reload(id, () => {
+                console.log("Page loaded");
+                document.body.style.visibility = "visible";
+              });
+            }
           }
         );
       } catch (error) {
@@ -189,4 +210,9 @@ export default async function getResult(tabUrl) {
   return response;
 }
 
+function stopPageLoad() {
+  console.log("PAGE STOP FUNC");
+  stop();
+  document.body.style.visibility = "hidden";
+}
 checkUrl();

@@ -1,16 +1,20 @@
 // @ts-nocheck
 
 // alert("WERDTFGBHJNKM");
+let sender;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  sender = sender;
   console.log("SENDER:::", sender);
   console.log("REQUEST:::", request);
   if (request?.trigger.includes("modal")) {
-    runModal();
+    const tabId = request?.tab;
+    console.log("TAB ID IN CONTENT:", tabId);
+    runModal(tabId);
     sendResponse({ res: "dfgjlokmhbvc" }, true);
   }
 });
 
-const runModal = async () => {
+const runModal = async (id ) => {
   // let queryOptions = { active: true, lastFocusedWindow: true };
   // let [tab] = await chrome.tabs.query(queryOptions);
   // try {
@@ -204,7 +208,10 @@ const runModal = async () => {
     console.log("clicked");
     dialog.close();
   });
-  dialog.querySelector("button").addEventListener("click", () => {
+  dialog.querySelector(".allow").addEventListener("click", () => {
+    chrome.runtime.sendMessage(sender, { trigger: "reload" }, null, () => {
+      console.log("Page load trigger");
+    });
     dialog.close();
   });
-}
+};
