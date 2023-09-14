@@ -1,21 +1,23 @@
 // @ts-nocheck
 
-// console.log(test);
-
 async function getTabs() {
   return await chrome.storage.sync.get().then((items) => {
-    return items["history"] ? items["history"] : [];
+    console.log("ITEMS CAME AS::", items["history"]);
+    return items["history"] ? items["history"] : {};
   });
 }
 
 async function getCurrentTab() {
   let queryOptions = { active: true, lastFocusedWindow: true };
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
+  try {
+    let [tab] = await chrome.tabs.query(queryOptions);
+    return tab;
+  } catch (error) {
+    return {};
+  }
 }
 let key = "";
 async function tabListener(details, changeInfo) {
-  console.log("DETAILS::", details, changeInfo);
   try {
     // key = await fetch(
     //   "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
@@ -36,21 +38,32 @@ async function tabListener(details, changeInfo) {
   //   console.log("cleared");
   // }); //! remove after test. This clears the storage.
 
-  const { url, id } = await getCurrentTab();
-  const baseUrl = url?.split("/")[2];
-  console.log(baseUrl, "BASE");
+  const { url , id } = await getCurrentTab();
+  const urlList = url?.split("/");
+  const baseUrl = urlList?.slice(0, 3).join("/");
   const tabsCache = await getTabs();
+  const test = {
+    "https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable": false,
+    "https://www.w3schools.com/jsref/prop_style_visibility.asp ": false,
+    undefined: false,
+  };
+  let idea = false;
+  console.log(
+    baseUrl,
+    "BASE",
+    !idea,
+    !tabsCache[baseUrl],
+    tabsCache[baseUrl] === true,
+    Object.keys(tabsCache)?.find((val) => val.includes(baseUrl)) === undefined
+  );
   if (
-    !["", "chrome://extensions/"].includes(url) &&
-    !tabsCache?.includes(baseUrl)
+    !["", "chrome://extensions/", undefined].includes(url) &&
+    Object.keys(tabsCache)?.find((val) => val.includes(baseUrl)) === undefined
   ) {
     const urlForm = new FormData();
-    urlForm.set("url", url);
-    let result = { url }; //! comment below is the right one
+    urlForm.set("url", baseUrl);
+    let result = { baseUrl }; //! comment below is the right one
     // let result = await getResult(url);
-
-    console.log(Object.keys(result));
-    // let notificationId;
 
     if (Object.keys(result).length === 0) {
       console.log("ALL GOOD");
@@ -70,97 +83,34 @@ async function tabListener(details, changeInfo) {
         //   console.log("TAB DISPLACED");
         // }); // !
 
-        await chrome.scripting.executeScript({
+        chrome.storage.sync.set(
+          {
+            currentTab: url,
+            history: { ...tabsCache, ...{ [baseUrl]: false } },
+          },
+          (items) => {
+            console.log("SAVED ITEMS::", items);
+          }
+        );
+        chrome.scripting.executeScript({
           target: { tabId: id },
           func: stopPageLoad,
         });
-        await chrome.tabs.sendMessage(
-          id,
-          { trigger: "modal", tab: id },
-          null,
-          () => {
-            console.log("ping content script");
-          }
-        );
-        chrome.runtime.onMessage.addListener(
-          (request, sender, sendResponse) => {
-            if (request?.trigger.includes("reload")) {
-              chrome.tabs.reload(id, () => {
-                console.log("Page loaded");
-                document.body.style.visibility = "visible";
-              });
-            }
-          }
-        );
+        triggerModal(id, baseUrl, url, tabsCache);
       } catch (error) {
         console.error("ERRor:::::", error);
       }
-
-      // try {
-      // const res = await chrome.tabs.sendMessage(id, "modal" );
-      // console.log("RESPONSE MESSAGE::", res);
-      // } catch (e) {
-      //   console.log(e);
-      // }
-
-      // await chrome.scripting
-      //   .executeScript({
-      //     target: { tabId: id },
-      //     files: ["content.js"],
-      //   })
-      //   .then(() => console.log("script injected", id));
-      //!: Check need of implementation. Should be during a `user gesture` like clicking a button....
-      // await chrome.notifications.create(
-      //   "url alert",
-      //   {
-      //     type: "basic",
-      //     iconUrl: "danger.png",
-      //     title: "URL check",
-      //     message: "hello there!",
-      //     buttons: [
-      //       {
-      //         title: "Accept",
-      //         iconUrl: "danger.png",
-      //       },
-      //       {
-      //         title: "Decline",
-      //         iconUrl: "icon.png",
-      //       },
-      //     ],
-      //   },
-      //   (value) => {
-      //     notificationId = value;
-      //     console.log("NOTIFICATION:", value);
-
-      //     // setTimeout(() => {
-      //     //   chrome.notifications.clear(value);
-      //     // }, 2000);
-      //   }
-      // );
-      // chrome.notifications.onButtonClicked.addListener(function (val, id) {
-      //   console.log("clicked no get head", { val }, null);
-      //   if (id === 0) {
-      //     console.log("clicked", val, 0);
-      //   } else if (id === 1) {
-      //     console.log("clicked", val, 1);
-      //   } else {
-      //     console.log("Settings clicked");
-      //   }
-      // });
     }
-
-    // setTimeout(() => {
-    //   chrome.notifications.clear(notificationId);
-    // }, 10000);
-
-    await chrome.storage.sync.set({
-      currentTab: url,
-      history: [...tabsCache, url],
+  } else if (
+    !["", "chrome://extensions/", undefined].includes(url) &&
+    !tabsCache[baseUrl]
+  ) {
+    chrome.scripting.executeScript({
+      target: { tabId: id },
+      func: stopPageLoad,
     });
+    triggerModal(id, baseUrl, url, tabsCache);
   }
-  await chrome.storage.sync.get(null, (data) => {
-    console.log("VALUE SET", data);
-  });
   return;
 }
 
@@ -211,8 +161,33 @@ export default async function getResult(tabUrl) {
 }
 
 function stopPageLoad() {
-  console.log("PAGE STOP FUNC");
   stop();
   document.body.style.visibility = "hidden";
+}
+
+function triggerModal(tabId, baseUrl, url, tabsCache) {
+  try {
+    chrome.tabs.sendMessage(tabId, { trigger: "modal", tab: tabId });
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request?.trigger.includes("reload")) {
+        chrome.tabs.reload(tabId, () => {
+          console.log("Page loaded");
+        });
+        chrome.storage.sync.set(
+          {
+            currentTab: url,
+            history: { ...tabsCache, ...{ [baseUrl]: true } },
+          },
+          () => {
+            chrome.storage.sync.get(null, (data) => {
+              console.log("UPDATED ITEMS::", data);
+            });
+          }
+        );
+      } else {
+        chrome.tabs.remove(tabId);
+      }
+    });
+  } catch (error) {}
 }
 checkUrl();

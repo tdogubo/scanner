@@ -2,19 +2,21 @@
 
 // alert("WERDTFGBHJNKM");
 let sender;
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  sender = sender;
-  console.log("SENDER:::", sender);
-  console.log("REQUEST:::", request);
-  if (request?.trigger.includes("modal")) {
-    const tabId = request?.tab;
-    console.log("TAB ID IN CONTENT:", tabId);
-    runModal(tabId);
-    sendResponse({ res: "dfgjlokmhbvc" }, true);
-  }
-});
+try {
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    sender = sender;
+    console.log("SENDER:::", sender);
+    console.log("REQUEST:::", request);
+    if (request?.trigger.includes("modal")) {
+      const tabId = request?.tab;
+      console.log("TAB ID IN CONTENT:", tabId);
+      runModal(tabId);
+      sendResponse({ res: "dfgjlokmhbvc" }, true);
+    }
+  });
+} catch (error) {}
 
-const runModal = async (id ) => {
+const runModal = async (id) => {
   // let queryOptions = { active: true, lastFocusedWindow: true };
   // let [tab] = await chrome.tabs.query(queryOptions);
   // try {
@@ -209,9 +211,12 @@ const runModal = async (id ) => {
     dialog.close();
   });
   dialog.querySelector(".allow").addEventListener("click", () => {
-    chrome.runtime.sendMessage(sender, { trigger: "reload" }, null, () => {
-      console.log("Page load trigger");
-    });
+    try {
+      chrome.runtime.sendMessage(sender, { trigger: "reload" }, () => {
+        console.log("Page load trigger", sender);
+      });
+    } catch (error) {}
+    document.body.style.visibility = "visible";
     dialog.close();
   });
 };
