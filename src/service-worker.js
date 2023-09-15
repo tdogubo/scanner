@@ -15,24 +15,9 @@ async function getCurrentTab() {
     return {};
   }
 }
-let key = "";
-async function tabListener(details, changeInfo) {
-  try {
-    key = await fetch(
-      "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
-      { method: "POST" }
-    )
-      .then(async (res) => {
-        const jsonData = await res.json();
-        return jsonData?.key;
-      })
-      .catch(() => {
-        return "";
-      });
-  } catch (err) {
-    console.error("Server Error");
-  } //! check relevance.
 
+async function tabListener(details, changeInfo) {
+  
   // await chrome.storage.sync.clear(() => {
   //   console.log("cleared");
   // }); //! remove after test. This clears the storage.
@@ -46,7 +31,7 @@ async function tabListener(details, changeInfo) {
     Object.keys(tabsCache)?.find((val) => val.includes(baseUrl)) === undefined
   ) {
     const urlForm = new FormData();
-    urlForm.set("url", baseUrl);
+    urlForm.set("url", baseUrl); //! check usefulness
     let result = await getResult(baseUrl);
 
     if (Object.keys(result).length > 0) {
@@ -85,6 +70,24 @@ export const checkUrl = async () => {
 };
 
 export default async function getResult(tabUrl) {
+  let key = "";
+  try {
+    key = await fetch(
+      "https://95qi9epou7.execute-api.us-east-1.amazonaws.com/default/fetchScanKey",
+      { method: "POST" }
+    )
+      .then(async (res) => {
+        const jsonData = await res.json();
+        return jsonData?.key;
+      })
+      .catch(() => {
+        return "";
+      });
+  } catch (err) {
+    console.error("Server Error");
+  } //! check relevance.
+
+  console.log("KEY::", key);
   let response = {};
   try {
     const body = JSON.stringify({

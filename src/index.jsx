@@ -2,51 +2,30 @@
 import { render } from "preact";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import "./style.css";
+import getResult from "./service-worker";
 // import { checkUrl } from "./service-worker";
 
-const Modal = () => {
-  return (
-    <div
-      style={{
-        position: "fixed",
-        boxShadow: "0px 12px 48px rgba(29, 5, 64, 0.32)",
-        height: "450px",
-        width: "450px",
-        border: "10px solid red",
-        top: "150px",
-        borderRadius: "20px",
-        backgroundColor: "white",
-      }}
-    >
-      <h1>IN SCANNER</h1>
-    </div>
-  );
-};
 const App = () => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
   const [consent, setConsent] = useState(false);
   const [val, setVal] = useState("");
 
-  const form = useRef(null);
+  // const form = useRef(null);
 
   const onInput = async (event) => {
     const { value } = event.target;
     setUrl(value);
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(form.current);
-    for (let items of data) {
-      console.log(items);
-    }
-
-    useCallback(() => {
-      if (!consent) {
-        alert("consent");
-      }
-    }, [consent]);
+    let result = await getResult(url);
+    console.log(result);
+    // const data = new FormData(form.current);
+    // for (let items of data) {
+    //   console.log(items);
+    // }
 
     // console.log(gettingCurrent);
     // const response = await axios(requestUrl, {
@@ -60,10 +39,6 @@ const App = () => {
     // console.log(response);
   };
 
-  useEffect(() => {
-    
-    Modal();
-  },[location.href])
   // var init_tabs = null;
   // chrome.storage.sync.get("currentTab", (result) => {
   //   init_tabs = result.currentTab;
@@ -74,7 +49,7 @@ const App = () => {
   return (
     <div>
       <h1>Test Extension</h1>
-      <form className="form" ref={form} onSubmit={onSubmit}>
+      <form className="form" onSubmit={onSubmit}>
         <div>
           <input
             type="url"
