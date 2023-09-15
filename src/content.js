@@ -1,15 +1,11 @@
 // @ts-nocheck
 
-// alert("WERDTFGBHJNKM");
 let sender;
 try {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sender = sender;
-    console.log("SENDER:::", sender);
-    console.log("REQUEST:::", request);
     if (request?.trigger.includes("modal")) {
       const tabId = request?.tab;
-      console.log("TAB ID IN CONTENT:", tabId);
       runModal(tabId);
       sendResponse({ res: "dfgjlokmhbvc" }, true);
     }

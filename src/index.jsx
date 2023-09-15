@@ -4,8 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import "./style.css";
 // import { checkUrl } from "./service-worker";
 
-const apiKey = import.meta.env.VITE_API_KEY;
-const requestUrl = import.meta.env.VITE_URL;
 const Modal = () => {
   return (
     <div
