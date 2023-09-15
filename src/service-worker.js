@@ -34,11 +34,11 @@ async function tabListener(details, changeInfo) {
     console.error("Server Error");
   } //! check relevance.
 
-  // await chrome.storage.sync.clear(() => {
-  //   console.log("cleared");
-  // }); //! remove after test. This clears the storage.
+  await chrome.storage.sync.clear(() => {
+    console.log("cleared");
+  }); //! remove after test. This clears the storage.
 
-  const { url , id } = await getCurrentTab();
+  const { url, id } = await getCurrentTab();
   const urlList = url?.split("/");
   const baseUrl = urlList?.slice(0, 3).join("/");
   const tabsCache = await getTabs();
@@ -69,20 +69,6 @@ async function tabListener(details, changeInfo) {
       console.log("ALL GOOD");
     } else {
       try {
-        // chrome.runtime.onMessage.addListener(function (
-        //   msg,
-        //   sender,
-        //   sendResponse
-        // ) {
-        //   if (msg.closeTab) {
-        //     chrome.tabs.remove(sender.tab.id);
-        //   }
-        // });
-
-        // chrome.tabs.update(id, { active: false, pinned: true }, () => {
-        //   console.log("TAB DISPLACED");
-        // }); // !
-
         chrome.storage.sync.set(
           {
             currentTab: url,
@@ -184,7 +170,7 @@ function triggerModal(tabId, baseUrl, url, tabsCache) {
             });
           }
         );
-      } else {
+      } else if (request?.trigger.includes("close")) {
         chrome.tabs.remove(tabId);
       }
     });

@@ -207,7 +207,11 @@ const runModal = async (id) => {
   // iframe.src = "https://aniwatch.to/watch/horimiya-the-missing-pieces-18421?ep=105852";
   // iframe.frameBorder = 0;
   dialog.querySelector(".close").addEventListener("click", () => {
-    console.log("clicked");
+    try {
+      chrome.runtime.sendMessage(sender, { trigger: "close" }, () => {
+        console.log("Page close trigger", sender);
+      });
+    } catch (error) {}
     dialog.close();
   });
   dialog.querySelector(".allow").addEventListener("click", () => {
