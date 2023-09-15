@@ -7,6 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# html for viewing modal
+test.html 
+
 yarn.lock
 
 package.lock
