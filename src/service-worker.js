@@ -116,11 +116,10 @@ export default async function getResult(tabUrl) {
     };
     const safetyCheck = await fetch(
       `https://webrisk.googleapis.com/v1/uris:search?threatTypes=MALWARE&threatTypes=SOCIAL_ENGINEERING&threatTypes=UNWANTED_SOFTWARE&uri=${tabUrl}&key=${key}`,
-      // `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`,
+      // `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`, //!only for GOOGLE safe browsing url
       options
     );
     response = { ...response, ...(await safetyCheck.json()) };
-    console.log(response);
   } catch (e) {
     console.error("Server Error");
   }
