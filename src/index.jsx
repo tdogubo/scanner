@@ -7,7 +7,7 @@ import getResult from "./service-worker";
 
 const App = () => {
   const [url, setUrl] = useState("");
-  const [error, setError] = useState(false);
+  const [malicious, setMalicious] = useState(false);
   const [consent, setConsent] = useState(false);
   const [val, setVal] = useState("");
 
@@ -21,7 +21,9 @@ const App = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
     let result = await getResult(url);
-    console.log(result);
+    if (Object.keys(result).length > 0) {
+      setMalicious(true);
+    }
     // const data = new FormData(form.current);
     // for (let items of data) {
     //   console.log(items);
@@ -55,13 +57,14 @@ const App = () => {
             type="url"
             name="url"
             value={url}
+            required
             id="url"
             placeholder="Enter url"
             onInput={onInput}
           />
-          <p>Invalid url</p>
         </div>
         <button type="submit">Check</button>
+        {malicious&& <h2>MALICIOUS!!</h2>}
       </form>
     </div>
   );
