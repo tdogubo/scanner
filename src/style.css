@@ -1,15 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
+
 
 .form {
 	display: inline-flex;
 	gap: 2rem;
 	width: 100%;
 	height: 100%;
+	/* font-family: 'Roboto', sans-serif; */
 	visibility: visible;
 }
 
 h2 {
-	font-family: 'Roboto', sans-serif;
+	/* font-family: 'Quicksand', sans-serif; */
 	color: #736363;
 }
 

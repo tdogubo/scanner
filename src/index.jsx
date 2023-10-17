@@ -72,8 +72,8 @@ const App = () => {
               placeholder="Enter url"
               onInput={onInput}
             />
-            <button type="submit">Check</button>
           </div>
+            <button type="submit">Check</button>
           <div className="image-container">
           {loading ? (
             <img src={LOADER} alt="loader" height={96} width={96}/>

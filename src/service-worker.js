@@ -17,9 +17,9 @@ async function getCurrentTab() {
 }
 
 async function tabListener(details, changeInfo) {
-  // await chrome.storage.sync.clear(() => {
-  //   console.log("cleared");
-  // }); //! remove after test. This clears the storage.
+  await chrome.storage.sync.clear(() => {
+    console.log("cleared");
+  }); //! remove after test. This clears the storage.
 
   const { url, id } = await getCurrentTab();
   const urlList = url?.split("/");
@@ -85,8 +85,6 @@ export default async function getResult(tabUrl) {
   } catch (err) {
     console.error("Server Error");
   } //! check relevance.
-
-  console.log("KEY::", key);
   let response = {};
   try {
     // const body = JSON.stringify({

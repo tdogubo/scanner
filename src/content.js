@@ -40,6 +40,8 @@ const runModal = async (id) => {
     border:none;
     border-radius: 8px;
     box-shadow: 2px 2px 20px #0000006b;
+	font-family: 'Quicksand', sans-serif;
+
      `
   );
   // modal.setAttribute(
@@ -144,8 +146,7 @@ const runModal = async (id) => {
     Alert
   </p> -->
   <p>
-    We use cookies to ensure that we give you the best experience on our
-    website.
+    The site you're about visiting is probably malicious....
   </p>
 
   <div
