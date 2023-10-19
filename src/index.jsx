@@ -12,13 +12,21 @@ const App = () => {
   const [url, setUrl] = useState("");
   const [malicious, setMalicious] = useState();
   const [loading, setLoading] = useState(false);
-  const [consent, setConsent] = useState(false);
+  const [checkDisabled, setCheckDisabled] = useState(true);
   const [val, setVal] = useState("");
+
+  const urlPattern =
+  // /http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)/;
+  /http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)/
+    // /^http+[s]?+(:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$)/;
+    // /http+[s]?(:\/\/)((www.)?)(([^.]+)\.)?([a-zA-z0-9\-_]+)(.com|.net|.gov|.org|.in)(\/[^\s]*)?/;
 
   // const form = useRef(null);
 
   const onInput = async (event) => {
     const { value } = event.target;
+    setCheckDisabled(!value?.match(urlPattern));
+    console.log(checkDisabled);
     setUrl(value);
   };
 
@@ -64,24 +72,28 @@ const App = () => {
         <div className="container">
           <div className="input-container">
             <input
+              className="input-style "
               type="url"
               name="url"
               value={url}
-              required
+              // required
               id="url"
               placeholder="Enter url"
+              // pattern="http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)"
               onInput={onInput}
             />
+            <button type="submit" disabled={checkDisabled}>
+              Check
+            </button>
           </div>
-            <button type="submit">Check</button>
           <div className="image-container">
-          {loading ? (
-            <img src={LOADER} alt="loader" height={96} width={96}/>
-          ) : malicious ? (
-            <img src={DANGER} alt="checkmark" />
-          ) : (
-            malicious === false && <img src={CHECKMARK} alt="checkmark" />
-          )}
+            {loading ? (
+              <img src={LOADER} alt="loader" height={96} width={96} />
+            ) : malicious ? (
+              <img src={DANGER} alt="checkmark" />
+            ) : (
+              malicious === false && <img src={CHECKMARK} alt="checkmark" />
+            )}
           </div>
         </div>
       </form>
