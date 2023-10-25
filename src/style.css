@@ -3,25 +3,29 @@
 
 @media (prefers-color-scheme: light) {
 	body {
-		background-color: #fce8db;
-		color: black;
+		background-color: #FAFAFC;
+		color: #7c848d;
 	}
 }
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
 	body {
-		background-color: #000000a5;
-		color: white;
+		background-color: #2A3038;
+		color: #9AA0A6;
 	}
+}
+
+.container {
+	width: 15rem;
+	height: 5rem;
 }
 
 .form {
 	display: flex;
 	gap: 2rem;
-	width: 15rem;
-
-	height: 5rem;
+	width: 100%;
+	height: 100%;
 	/* font-family: 'Roboto', sans-serif; */
 	visibility: visible;
 }
@@ -29,10 +33,10 @@
 h2 {
 	text-align: center;
 	font-family: 'Quicksand', sans-serif;
-	color: #281b1b;
+	/* color: #281b1b; */
 }
 
-.container {
+.wrapper {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -47,9 +51,9 @@ h2 {
 }
 
 .input-style {
-	border-radius: 2px;
+	border-radius: 0.2rem;
 	border: none;
-	background-color: #776d6d52;
+	background-color: #F3F4F8;
 	padding: 0 5px;
 }
 

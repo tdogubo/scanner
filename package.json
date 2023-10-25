@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
-		"build-extension": "yarn build && cp src/service-worker.js src/content.js dist/",
+		"build-extension": "yarn build && cp src/* dist",
 		"preview": "vite preview"
 	},
 	"dependencies": {

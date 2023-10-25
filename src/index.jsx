@@ -6,6 +6,7 @@ import CHECKMARK from "../public/checkmark.svg";
 import DANGER from "../public/danger.svg";
 import LOADER from "../public/loader.gif";
 import getResult from "./service-worker";
+import Loader from "./loader";
 // import { checkUrl } from "./service-worker";
 
 const App = () => {
@@ -16,10 +17,10 @@ const App = () => {
   const [val, setVal] = useState("");
 
   const urlPattern =
-  // /http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)/;
-  /http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)/
-    // /^http+[s]?+(:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$)/;
-    // /http+[s]?(:\/\/)((www.)?)(([^.]+)\.)?([a-zA-z0-9\-_]+)(.com|.net|.gov|.org|.in)(\/[^\s]*)?/;
+    // /http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)/;
+    /http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)/;
+  // /^http+[s]?+(:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$)/;
+  // /http+[s]?(:\/\/)((www.)?)(([^.]+)\.)?([a-zA-z0-9\-_]+)(.com|.net|.gov|.org|.in)(\/[^\s]*)?/;
 
   // const form = useRef(null);
 
@@ -66,30 +67,34 @@ const App = () => {
   // const [tabs, setTabs] = useState(init_tabs);
   // console.log(tabs);
   return (
-    <div>
-      <h2>Scan Me</h2>
+    <div className="container">
+      {!loading && <h2>Scan Me</h2>}
       <form className="form" onSubmit={onSubmit}>
-        <div className="container">
-          <div className="input-container">
-            <input
-              className="input-style "
-              type="url"
-              name="url"
-              value={url}
-              // required
-              id="url"
-              placeholder="Enter url"
-              // pattern="http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)"
-              onInput={onInput}
-            />
-            <button type="submit" disabled={checkDisabled}>
-              Check
-            </button>
-          </div>
+        <div className="wrapper">
+          {!loading && (
+            <div className="input-container">
+              <input
+                className="input-style "
+                type="url"
+                name="url"
+                value={url}
+                // required
+                id="url"
+                placeholder="Enter url"
+                // pattern="http+[s]?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)"
+                onInput={onInput}
+              />
+              <button type="submit" disabled={checkDisabled}>
+                Check
+              </button>
+            </div>
+          )}
+
           <div className="image-container">
             {loading ? (
-              <img src={LOADER} alt="loader" height={96} width={96} />
-            ) : malicious ? (
+              <Loader />
+            ) : // <img src={LOADER} alt="loader" height={96} width={96} />
+            malicious ? (
               <img src={DANGER} alt="checkmark" />
             ) : (
               malicious === false && <img src={CHECKMARK} alt="checkmark" />
