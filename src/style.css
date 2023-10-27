@@ -16,21 +16,31 @@
 	}
 }
 
+.data-container {
+	position: absolute;
+	/* display: flex;
+	justify-content: center; */
+	height: 100%;
+	width: 100%;
+	/* padding: 2rem; */
+	/* z-index: auto; */
+}
+
 .container {
-	width: 15rem;
-	height: 5rem;
+	width: 16rem;
+	height: 6rem;
 }
 
 .form {
 	display: flex;
 	gap: 2rem;
 	width: 100%;
-	height: 100%;
+	height: auto;
 	/* font-family: 'Roboto', sans-serif; */
-	visibility: visible;
+	/* visibility: visible; */
 }
 
-h2 {
+h1 {
 	text-align: center;
 	font-family: 'Quicksand', sans-serif;
 	/* color: #281b1b; */
@@ -62,8 +72,10 @@ h2 {
 }
 
 .image-container {
-	display: flex;
-	justify-content: center;
-	height: 80%;
+	position: absolute;
+	height: 100%;
 	width: 100%;
+	top: 10%;
+	left: 30%;
+	backdrop-filter: blur(5rem);
 }

@@ -87,34 +87,34 @@ export default async function getResult(tabUrl) {
   } //! check relevance.
   let response = {};
   try {
-    // const body = JSON.stringify({
-    //   client: {
-    //     clientId: "scanner_App",
-    //     clientVersion: "1.5.2",
-    //   },
-    //   threatInfo: {
-    //     threatTypes: ["MALWARE", "SOCIAL_ENGINEERING"],
-    //     platformTypes: ["WINDOWS"],
-    //     threatEntryTypes: ["URL"],
-    //     threatEntries: [
-    //       { url: tabUrl },
-    //       // {
-    //       //   url: "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/", //! uncomment during testing
-    //       // },
-    //     ],
-    //   },
-    // }); //! Body not necessary while using the web risk api
+    const body = JSON.stringify({
+      client: {
+        clientId: "scanner_App",
+        clientVersion: "1.5.2",
+      },
+      threatInfo: {
+        threatTypes: ["MALWARE", "SOCIAL_ENGINEERING"],
+        platformTypes: ["WINDOWS"],
+        threatEntryTypes: ["URL"],
+        threatEntries: [
+          { url: tabUrl },
+          // {
+          //   url: "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/", //! uncomment during testing
+          // },
+        ],
+      },
+    }); //! Body not necessary while using the web risk api
     const options = {
-      // method: "POST", //! Web risk API is default GET request
+      method: "POST", //! Web risk API is default GET request
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json;charset=UTF-8",
       },
-      // body,
+      body,
     };
     const safetyCheck = await fetch(
-      `https://webrisk.googleapis.com/v1/uris:search?threatTypes=MALWARE&threatTypes=SOCIAL_ENGINEERING&threatTypes=UNWANTED_SOFTWARE&uri=${tabUrl}&key=${key}`,
-      // `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`, //!only for GOOGLE safe browsing url
+      // `https://webrisk.googleapis.com/v1/uris:search?threatTypes=MALWARE&threatTypes=SOCIAL_ENGINEERING&threatTypes=UNWANTED_SOFTWARE&uri=${tabUrl}&key=${key}`,
+      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`, //!only for GOOGLE safe browsing url
       options
     );
     response = { ...response, ...(await safetyCheck.json()) };
