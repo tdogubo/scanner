@@ -5,30 +5,13 @@ try {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sender = sender;
     if (request?.trigger.includes("modal")) {
-      const tabId = request?.tab;
-      runModal(tabId);
-      sendResponse({ res: "dfgjlokmhbvc" }, true);
+      runModal();
+      sendResponse({ res: "Ext response" }, true); //! response validity
     }
   });
-} catch (error) {}
+} catch (error) {console.log("ERROR ON CONTENT END::: ", error);}
 
-const runModal = async (id) => {
-  // let queryOptions = { active: true, lastFocusedWindow: true };
-  // let [tab] = await chrome.tabs.query(queryOptions);
-  // try {
-  //   await chrome.runtime.onMessage.addListener(
-  //     (request, sender, sendResponse) => {
-  //       console.log("SENDER:::", sender);
-  //       console.log("REQUEST:::", request);
-  //       if (request.includes("modal")) {
-  //         alert("USER!!!");
-  //         sendResponse({ res: "dfgjlokmhbvc" }, true);
-  //       }
-  //     }
-  //   );
-  // } catch (error) {
-  //   console.log(error);
-  // }
+const runModal = async () => {
   const modal = document.createElement("dialog");
   modal.setAttribute(
     "style",
@@ -44,79 +27,10 @@ const runModal = async (id) => {
 
      `
   );
-  // modal.setAttribute(
-  //   "style",
-  //   `height:450px;
-  //   width:450px;
-  //   border: 10px solid red;
-  //   top:150px;
-  //   border-radius:20px;
-  //   background-color:white;
-  //   position: fixed;
-  //   box-shadow: 0px 12px 48px rgba(29, 5, 64, 0.32);`
-  // );
-  //   modal.innerHTML = `
-  // <div style="display: flex; flex-direction: row-reverse; gap: 1em; width: 100%; height: 100%;">
-  //   <div style="">
-  //     <button
-  //       style="
-  //         padding: 8px 12px;
-  //         font-size: 16px;
-  //         border: none;
-  //         border-radius: 20px;
-  //         color: #eb433d;
-  //         cursor: pointer;"
-  //     >
-  //       &#10005;
-  //     </button>
-  //   </div>
-  //   <div style="width: 100%">
-  //     <img
-  //       width="64"
-  //       height="64"
-  //       src="https://img.icons8.com/arcade/64/exclamation-mark.png"
-  //       alt="exclamation-mark"
-  //     />
-  //     <div>
-  //       <p>This site may be malicious.</p>
-  //       <p>Are you sure you want to proceed?</p>
-  //     </div>
-  //     <div style="width: 100%; position: relative; left: 5px">
-  //       <button
-  //         style="
-  //           padding: 8px 12px;
-  //           font-size: 16px;
-  //           border: none;
-  //           border-radius: 20px;
-  //           color: #eb433d;
-  //           cursor: pointer;
-  //         "
-  //       >
-  //         Close Page
-  //       </button>
-  //       <button
-  //         style="
-  //           padding: 8px 12px;
-  //           font-size: 16px;
-  //           border: none;
-  //           border-radius: 20px;
-  //           color: #eb433d;
-  //           cursor: pointer;
-  //         "
-  //       >
-  //         Proceed
-  //       </button>
-  //     </div>
-  //   </div>
-  // </div>
-
-  // `;
-  modal.innerHTML = `
-
   
-             <div
-  style="
-    width: 100%;
+  modal.innerHTML = `
+ <div
+  style=" width: 100%;
     height: 100%;
     background-color: #ffffff;
     color: #070707;
@@ -126,25 +40,22 @@ const runModal = async (id) => {
     justify-content: center;
     position: relative;
     text-align: center;
-    overflow: scroll;
-    
-  "
->
+    overflow: scroll; " >
+    <style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
+</style>
+
   <div style="
     width: 65px;
     height: 65px;
     display: grid;
-    
-    justify-content: center;
-  ">
+    justify-content: center;" >
+
     <img
       src="https://img.icons8.com/arcade/64/exclamation-mark.png"
-      alt="exclamation-mark"
-    />
-  </div>
-  <!-- <p style="font-size: 1.2em; font-weight: 400; color: #1a1a1a">
-    Alert
-  </p> -->
+      alt="exclamation-mark" />
+ 
+     </div>
   <p>
     The site you're about visiting is probably malicious....
   </p>
@@ -162,60 +73,55 @@ const runModal = async (id) => {
         border: none;
         color: #ffffff;
         cursor: pointer;
-        font-weight: 600;
-        border-radius: 20px;
+        font-weight: 500;
+        font-size: 1em;
+        border-radius: 1em;
         box-shadow: 0 4px 6px -1px #740a42, 0 2px 4px -1px #f98ba6;
         transition: all 0.6s ease;
       "
   class = "allow"
-
-    >
+  onMouseOver = 'this.style.backgroundColor= "#de6567"' onMouseOut = 'this.style.backgroundColor= "#be1e21"'>
       Allow
     </button>
+
     <button
       style="
         width: 80px;
         height: 30px;
-        background-color: #929292;
+        background-color: #4b95f7;
         transition-duration: 0.2s;
         color: #ffffff;
         border: none;
         cursor: pointer;
-        font-weight: 600;
-        border-radius: 20px;
+        font-weight: 500;
+        font-size: 1em;
+        border-radius: 1em;
         box-shadow: 0 4px 6px -1px #2d2b2b, 0 2px 4px -1px #1e1a1a;;
-        transition: all 0.6s ease;
-      "
+        transition: all 0.6s ease;"
     class="close"
-
-
-    >
+    onMouseOver = 'this.style.backgroundColor= "#83b9ff"' onMouseOut = 'this.style.backgroundColor= "#4b95f7"'>
       Close
     </button>
+
   </div>
 </div>
-
 `;
 
   document.body.appendChild(modal);
   const dialog = document.querySelector("dialog");
+
   dialog.showModal();
-  // const iframe = document.getElementById("popup-content");
-  // iframe.src = "https://aniwatch.to/watch/horimiya-the-missing-pieces-18421?ep=105852";
-  // iframe.frameBorder = 0;
+
   dialog.querySelector(".close").addEventListener("click", () => {
     try {
-      chrome.runtime.sendMessage(sender, { trigger: "close" }, () => {
-        console.log("Page close trigger", sender);
-      });
+      chrome.runtime.sendMessage(sender, { trigger: "close" });
     } catch (error) {}
     dialog.close();
   });
+  
   dialog.querySelector(".allow").addEventListener("click", () => {
     try {
-      chrome.runtime.sendMessage(sender, { trigger: "reload" }, () => {
-        console.log("Page load trigger", sender);
-      });
+      chrome.runtime.sendMessage(sender, { trigger: "reload" });
     } catch (error) {}
     document.body.style.visibility = "visible";
     dialog.close();

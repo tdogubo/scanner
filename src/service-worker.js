@@ -6,32 +6,22 @@ async function getTabs() {
   });
 }
 
-async function getCurrentTab() {
-  let queryOptions = { active: true, lastFocusedWindow: true };
-  try {
-    let [tab] = await chrome.tabs.query(queryOptions);
-    return tab;
-  } catch (error) {
-    return {};
-  }
-}
-
-async function tabListener(details, changeInfo) {
+async function tabListener(tabId, changeInfo, tabDetails) {
   await chrome.storage.sync.clear(() => {
     console.log("cleared");
-  }); //! remove after test. This clears the storage.
+  }); //! Clear storage. Uncomment only during testing.
 
-  const { url, id } = await getCurrentTab();
+  const { url } = tabDetails;
   const urlList = url?.split("/");
   const baseUrl = urlList?.slice(0, 3).join("/");
   const tabsCache = await getTabs();
+
   if (
-    !["", "chrome://extensions/", undefined].includes(url) &&
+    !["", undefined].includes(url) &&
+    !url.includes("chrome://") &&
     Object.keys(tabsCache)?.find((val) => val.includes(baseUrl)) === undefined
   ) {
-    const urlForm = new FormData();
-    urlForm.set("url", baseUrl); //! check usefulness
-    let result = await getResult(baseUrl);
+    let result = await getResult(url);
 
     if (Object.keys(result).length > 0) {
       try {
@@ -40,23 +30,24 @@ async function tabListener(details, changeInfo) {
           history: { ...tabsCache, ...{ [baseUrl]: false } },
         });
         chrome.scripting.executeScript({
-          target: { tabId: id },
+          target: { tabId: tabId },
           func: stopPageLoad,
         });
-        triggerModal(id, baseUrl, url, tabsCache);
+        triggerModal(tabId, baseUrl, url, tabsCache);
       } catch (error) {
         console.error("ERRor:::::", error);
       }
     }
   } else if (
-    !["", "chrome://extensions/", undefined].includes(url) &&
+    !["", undefined].includes(url) &&
+    !url.includes("chrome://") &&
     !tabsCache[baseUrl]
   ) {
     chrome.scripting.executeScript({
-      target: { tabId: id },
+      target: { tabId: tabId, allFrames: true },
       func: stopPageLoad,
     });
-    triggerModal(id, baseUrl, url, tabsCache);
+    triggerModal(tabId, baseUrl, url, tabsCache);
   }
   return;
 }
@@ -64,7 +55,6 @@ async function tabListener(details, changeInfo) {
 export const checkUrl = async () => {
   // await chrome.tabs.onActivated.addListener(tabListener); //! only runs when a tab is active
   await chrome.tabs.onUpdated.addListener(tabListener); //! only runs on reload and when a tab is active
-
   return;
 };
 
@@ -87,34 +77,34 @@ export default async function getResult(tabUrl) {
   } //! check relevance.
   let response = {};
   try {
-    const body = JSON.stringify({
-      client: {
-        clientId: "scanner_App",
-        clientVersion: "1.5.2",
-      },
-      threatInfo: {
-        threatTypes: ["MALWARE", "SOCIAL_ENGINEERING"],
-        platformTypes: ["WINDOWS"],
-        threatEntryTypes: ["URL"],
-        threatEntries: [
-          { url: tabUrl },
-          // {
-          //   url: "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/", //! uncomment during testing
-          // },
-        ],
-      },
-    }); //! Body not necessary while using the web risk api
+    // const body = JSON.stringify({
+    //   client: {
+    //     clientId: "scanner_App",
+    //     clientVersion: "1.5.2",
+    //   },
+    //   threatInfo: {
+    //     threatTypes: ["MALWARE", "SOCIAL_ENGINEERING"],
+    //     platformTypes: ["WINDOWS"],
+    //     threatEntryTypes: ["URL"],
+    //     threatEntries: [
+    //       { url: tabUrl },
+    //       // {
+    //       //   url: "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/", //! uncomment during testing
+    //       // },
+    //     ],
+    //   },
+    // }); //! Body not necessary while using the web risk api
     const options = {
-      method: "POST", //! Web risk API is default GET request
+      // method: "POST", //! Web risk API is default GET request
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json;charset=UTF-8",
       },
-      body,
+      // body,
     };
     const safetyCheck = await fetch(
-      // `https://webrisk.googleapis.com/v1/uris:search?threatTypes=MALWARE&threatTypes=SOCIAL_ENGINEERING&threatTypes=UNWANTED_SOFTWARE&uri=${tabUrl}&key=${key}`,
-      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`, //!only for GOOGLE safe browsing url
+      `https://webrisk.googleapis.com/v1/uris:search?threatTypes=MALWARE&threatTypes=SOCIAL_ENGINEERING&threatTypes=UNWANTED_SOFTWARE&uri=${tabUrl}&key=${key}`,
+      // `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`, //!only for GOOGLE safe browsing url
       options
     );
     response = { ...response, ...(await safetyCheck.json()) };
@@ -143,6 +133,8 @@ function triggerModal(tabId, baseUrl, url, tabsCache) {
         chrome.tabs.remove(tabId);
       }
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 checkUrl();

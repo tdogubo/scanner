@@ -1,10 +1,10 @@
 .loader-container {
     position: absolute;
-    top: 50%;
+    top: 43%;
     left: 50%;
     border-radius: 50%;
-    height: 6rem;
-    width: 6rem;
+    height: 5rem;
+    width: 5rem;
     animation: rotate_3922 1.2s linear infinite;
     background-color: #9b59b6;
     background-image: linear-gradient(#9b59b6, #84cdfa, #5ad1cd);
