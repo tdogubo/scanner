@@ -23,7 +23,7 @@ async function tabListener(tabId, changeInfo, tabDetails) {
   ) {
     let result = await getResult(url);
 
-    if (Object.keys(result).length > 0) {
+    if (result?.threat) {
       try {
         chrome.storage.sync.set({
           currentTab: url,
@@ -97,7 +97,7 @@ export default async function getResult(tabUrl) {
     const options = {
       // method: "POST", //! Web risk API is default GET request
       headers: {
-        Accept: "application/json",
+        // Accept: "application/json",
         "Content-Type": "application/json;charset=UTF-8",
       },
       // body,

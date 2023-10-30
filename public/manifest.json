@@ -16,7 +16,8 @@
         "storage",
         "scripting",
         "tabs",
-        "activeTab"
+        "activeTab",
+        "unlimitedStorage"
     ],
     "optional_permissions": [
     ],
