@@ -1,13 +1,13 @@
 // @ts-nocheck
 
 async function getTabs() {
-  return await chrome.storage.sync.get().then((items) => {
+  return await chrome.storage.local.get().then((items) => {
     return items["history"] ? items["history"] : {};
   });
 }
 
 async function tabListener(tabId, changeInfo, tabDetails) {
-  await chrome.storage.sync.clear(() => {
+  await chrome.storage.local.clear(() => {
     console.log("cleared");
   }); //! Clear storage. Uncomment only during testing.
 
@@ -25,7 +25,7 @@ async function tabListener(tabId, changeInfo, tabDetails) {
 
     if (result?.threat) {
       try {
-        chrome.storage.sync.set({
+        chrome.storage.local.set({
           currentTab: url,
           history: { ...tabsCache, ...{ [baseUrl]: false } },
         });
@@ -108,11 +108,14 @@ export default async function getResult(tabUrl) {
       options
     );
     response = { ...response, ...(await safetyCheck.json()) };
+    //TODO: Add url to local storage if response returns threat.
   } catch (e) {
     console.error("Server Error");
   }
   return response;
 }
+
+//!Add result from response to local storage
 
 function stopPageLoad() {
   stop();
@@ -125,7 +128,7 @@ function triggerModal(tabId, baseUrl, url, tabsCache) {
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request?.trigger.includes("reload")) {
         chrome.tabs.reload(tabId);
-        chrome.storage.sync.set({
+        chrome.storage.local.set({ //! Check if this is already set in getResult 
           currentTab: url,
           history: { ...tabsCache, ...{ [baseUrl]: true } },
         });
