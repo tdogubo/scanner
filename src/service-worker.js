@@ -7,9 +7,9 @@ async function getTabs() {
 }
 
 async function tabListener(tabId, changeInfo, tabDetails) {
-  await chrome.storage.local.clear(() => {
-    console.log("cleared");
-  }); //! Clear storage. Uncomment only during testing.
+  // await chrome.storage.local.clear(() => {
+  //   console.log("cleared");
+  // }); //! Clear storage. Uncomment only during testing.
 
   const { url } = tabDetails;
   const urlList = url?.split("/");
